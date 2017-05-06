@@ -81,6 +81,14 @@ void set(Matrix m, uint i, uint j, E val)
     else{err(ERR_NULLMAT);}
 }
 
+E* getRow(Matrix m, uint i){
+    return m->mat[i];
+}
+
+void setRow(Matrix m, uint i, E* row){
+    m->mat[i] = row;
+}
+
 Matrix newMEmpty(uint r, uint c)
 {
     Matrix m = malloc(sizeof(struct matrix));

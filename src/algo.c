@@ -70,3 +70,25 @@ void triU(Matrix m)
 
 // Fonctions relatives au pivot de gauss
 
+void scalar_row(Matrix m, uint row, E scal)
+{
+    for (uint j=0; j < cols(m); j++)
+    {
+        E val = get(m, row, j);
+        set(m, row, j, scal*val);
+    }
+}
+
+void switch_rows(Matrix m, uint row1, uint row2){
+    E* temp = getRow(m, row1);
+    setRow(m, row1, getRow(m, row2));
+    setRow(m, row2, temp);
+}
+
+void add_rows(Matrix m, uint result, uint row1, uint row2){
+    for (uint j=0; j < cols(m); j++)
+    {
+        E val = get(m, row1, j) + get(m, row2, j);
+        set(m, result, j, val);
+    }
+}

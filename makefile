@@ -7,7 +7,7 @@ else
 	CFLAGS = -Wall -Werror -Wextra -std=c11
 endif
 
-LDFLAGS = -lm
+LDFLAGS = -lm -lcurses
 EXEC = main
 INCLUDES = $(wildcard include/*.h)
 SRC = $(wildcard src/*.c)
@@ -26,3 +26,7 @@ obj .:
 .PHONY: clean
 clean :
 	rm obj/* $(EXEC)
+
+.PHONY: tests
+tests:
+	tests/runtests.sh $(TESTS)

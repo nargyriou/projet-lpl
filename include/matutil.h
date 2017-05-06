@@ -5,10 +5,15 @@
 #define ERR_NULLMAT 0x11
 #define ERR_WRGSIZE 0x12
 
+#include <stdbool.h>
+
 typedef double E;
 typedef unsigned int uint;
 
-typedef enum{false,true}bool;
+//typedef enum {
+//	false,
+//	true
+//} bool;
 
 typedef struct matrix {
     E **mat;
@@ -24,6 +29,9 @@ E get(Matrix m, uint i, uint j);
 void set(Matrix m, uint i, uint j, E val);
 uint rows(Matrix m);
 uint cols(Matrix m);
+
+E*   getRow(Matrix m, uint i);
+void setRow(Matrix m, uint i, E* row);
 
 void deleteMatrix(Matrix m);
 void printMatrix(Matrix m);
