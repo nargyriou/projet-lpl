@@ -7,8 +7,8 @@ E detRec(Matrix m);
 E detTri(Matrix m);
 Matrix invertComat(Matrix m);
 Matrix invertGauss(Matrix m);
-Matrix triU(Matrix m);
-Matrix triL(Matrix m);
+void triU(Matrix m);
+void triL(Matrix m);
 Matrix PLU();
 
 

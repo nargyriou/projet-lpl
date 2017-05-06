@@ -96,6 +96,20 @@ Matrix newMEmpty(uint r, uint c)
     return m;
 }
 
+void deleteMatrix(Matrix m)
+{
+    if(m!=NULL)
+    {
+        for(uint i=0;i<m->nb_rows;i++)
+            free(m->mat[i]);
+        free(m->mat);
+        // m->nb_rows = 0;
+        // m->nb_columns = 0;
+        free(m);
+    }
+    else{err(ERR_NULLMAT);}
+}
+
 Matrix newM(uint r, uint c, uint count, ...)
 {
     Matrix m = newMEmpty(r, c);
@@ -104,7 +118,6 @@ Matrix newM(uint r, uint c, uint count, ...)
     va_start(args, count);
     for(uint i=0;i<rows(m);i++)
     {
-        m->mat[i] = malloc(cols(m)*sizeof(E));
         for(uint j=0;j<cols(m);j++)
         {
             E val = va_arg(args, double);
@@ -125,20 +138,6 @@ Matrix id(uint size)
     return m;
 }
 
-void deleteMatrix(Matrix m)
-{
-    if(m!=NULL)
-    {
-        for(uint i=0;i<m->nb_rows;i++)
-            free(m->mat[i]);
-        free(m->mat);
-        // m->nb_rows = 0;
-        // m->nb_columns = 0;
-        free(m);
-    }
-    else{err(ERR_NULLMAT);}
-}
-
 void printMatrix(Matrix m)
 {
     uint y = rows(m);
@@ -149,8 +148,9 @@ void printMatrix(Matrix m)
     {
         for(uint i = 0; i < y; i++)
         {
-            //(X Y Z)
+            //(%9f %9f %9f)\n
             printf("(");
+            // iterates on all but the last column
             for(uint j=0; j < x; j++){
                 printf("%9f ", get(m, i, j));
             }
