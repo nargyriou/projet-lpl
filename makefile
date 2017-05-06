@@ -9,16 +9,20 @@ endif
 
 LDFLAGS = -lm
 EXEC = main
-SRC = $(wildcard *.c)
-OBJ = $(SRC:.c=.o)
+INCLUDES = $(wildcard include/*.h)
+SRC = $(wildcard src/*.c)
+OBJ = $(SRC:src/%.c=obj/%.o)
 
 all: $(EXEC)
 
 main: $(OBJ)
 	$(CC) $^ -o $@ $(LDFLAGS)
-	
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< 
-	
+
+obj/%.o: src/%.c | obj
+	$(CC) $(CFLAGS) -c -Iinclude -o $@ $< 
+obj .:
+	@mkdir -p obj
+
+.PHONY: clean
 clean :
-	rm *.o $(EXEC)
+	rm obj/* $(EXEC)
