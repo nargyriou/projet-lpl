@@ -50,3 +50,28 @@ Matrix invertComat(Matrix m)
         return NULL;
     }
 }
+
+Matrix triangule_top(Matrix m)
+{
+    uint i = 0;
+    uint j = 0;
+    uint k = 0;
+    
+    E p = 0.0;
+    E q = 0.0;
+
+    for (k = 0; k < cols(m); k++)
+    {
+        p = get(m, k, k);
+        for (i = k+1; i < rows(m); i++)
+        {
+            q = get(m, i, k);
+            set(m, i, k, 0.0);
+            for (j = k+1; j < cols(m); j++)
+            {
+                set(m, i, j, get(m, i, j) - (get(m, k, j)*(q/p)) );
+            }
+        }
+    }
+    return m;
+}

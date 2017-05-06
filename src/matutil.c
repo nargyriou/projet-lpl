@@ -43,63 +43,22 @@ void err(int errnum)
     printf(RESET);
 }
 
-Matrix id(uint size)
+uint rows(Matrix m)
 {
-    Matrix m = malloc(sizeof(struct matrix));
-    m->nb_columns = size;
-    m->nb_rows = size;
-    m->mat = malloc(m->nb_rows*sizeof(E*));
-    for(uint i=0;i<m->nb_rows;i++)
-    {
-        m->mat[i]=malloc(m->nb_columns*sizeof(E));
-        for(uint j=0;j<m->nb_columns;j++)
-            m->mat[i][j]=i==j?1:0;
-    }
-    return m;
+    return m->nb_rows;
 }
 
-Matrix newMEmpty(uint r, uint c)
+uint cols(Matrix m)
 {
-    Matrix m = malloc(sizeof(struct matrix));
-    m->nb_columns = c;
-    m->nb_rows = r;
-    m->mat = malloc(m->nb_rows*sizeof(E*));
-    for(uint i=0;i<m->nb_rows;i++)
-    {
-        m->mat[i]=malloc(m->nb_columns*sizeof(E));
-        for(uint j=0;j<m->nb_columns;j++)
-            m->mat[i][j]=0;
-    }
-    return m;
+    return m->nb_columns;
 }
 
-Matrix newM(uint r, uint c, uint count, ...)
-{
-    Matrix m = malloc(sizeof(struct matrix));
-    m->nb_columns = c;
-    m->nb_rows = r;
-    m->mat = malloc(m->nb_rows*sizeof(E*));
-    va_list args;
-    va_start(args, count);
-    for(uint i=0;i<m->nb_rows;i++)
-    {
-        m->mat[i]=malloc(m->nb_columns*sizeof(E));
-        for(uint j=0;j<m->nb_columns;j++)
-        {
-            E val = va_arg(args, double);
-            set(m,i,j,val);
-        }
-    }
-    va_end(args);
-    return m;
-}
-
-E get(Matrix m,uint i, uint j)
+E get(Matrix m, uint i, uint j)
 {
     if(m!=NULL)
     {
         //printf("not null\n");
-        if(i<m->nb_rows && j<m->nb_columns)
+        if(i<rows(m) && j<cols(m))
             return m->mat[i][j];
         else
         {
@@ -114,7 +73,7 @@ void set(Matrix m, uint i, uint j, E val)
 {
     if(m!=NULL)
     {
-        if(i<m->nb_rows && j<m->nb_columns)
+        if(i<rows(m) && j<cols(m))
             m->mat[i][j]=val;
         else{err(ERR_WRGID);}
 
@@ -122,14 +81,48 @@ void set(Matrix m, uint i, uint j, E val)
     else{err(ERR_NULLMAT);}
 }
 
-uint rows(Matrix m)
+Matrix newMEmpty(uint r, uint c)
 {
-    return m->nb_rows;
+    Matrix m = malloc(sizeof(struct matrix));
+    m->nb_columns = c;
+    m->nb_rows = r;
+    m->mat = malloc(r*sizeof(E*));
+    for(uint i=0;i<r;i++)
+    {
+        m->mat[i]=malloc(c*sizeof(E));
+        for(uint j=0;j<c;j++)
+            set(m, i, j, 0);
+    }
+    return m;
 }
 
-uint cols(Matrix m)
+Matrix newM(uint r, uint c, uint count, ...)
 {
-    return m->nb_columns;
+    Matrix m = newMEmpty(r, c);
+
+    va_list args;
+    va_start(args, count);
+    for(uint i=0;i<rows(m);i++)
+    {
+        m->mat[i] = malloc(cols(m)*sizeof(E));
+        for(uint j=0;j<cols(m);j++)
+        {
+            E val = va_arg(args, double);
+            set(m,i,j,val);
+        }
+    }
+    va_end(args);
+    return m;
+}
+
+Matrix id(uint size)
+{
+    Matrix m = newMEmpty(size, size);
+
+    for(uint i=0;i<size;i++)
+        set(m, i, i, 1);
+
+    return m;
 }
 
 void deleteMatrix(Matrix m)
@@ -139,8 +132,8 @@ void deleteMatrix(Matrix m)
         for(uint i=0;i<m->nb_rows;i++)
             free(m->mat[i]);
         free(m->mat);
-        m->nb_rows = 0;
-        m->nb_columns = 0;
+        // m->nb_rows = 0;
+        // m->nb_columns = 0;
         free(m);
     }
     else{err(ERR_NULLMAT);}
@@ -148,29 +141,38 @@ void deleteMatrix(Matrix m)
 
 void printMatrix(Matrix m)
 {
+    uint y = rows(m);
+    uint x = cols(m);
+    x--;
+
     if(m!=NULL)
     {
-        for(uint i = 0;i<m->nb_rows;i++)
+        for(uint i = 0; i < y; i++)
         {
-            for(uint j=0;j<m->nb_columns;j++)
-            {
-                printf("%9f",get(m,i,j));
+            //(X Y Z)
+            printf("(");
+            for(uint j=0; j < x; j++){
+                printf("%9f ", get(m, i, j));
             }
-            printf("\n");
+            printf("%9f)\n", get(m, i, x));
         }
+        printf("\n");
     }
-    else{err(ERR_NULLMAT);}
+    else
+    {
+        err(ERR_NULLMAT);
+    }
 }
 
 bool isSymetric(Matrix m)
 {
     if(m!=NULL)
     {
-        if(m->nb_columns==m->nb_rows)
+        if(cols(m)==rows(m))
         {
             bool sym = true;
-            for(uint i = 0;i<m->nb_rows;i++)
-                for(uint j=i+1;j<m->nb_columns;j++)
+            for(uint i = 0;i<rows(m);i++)
+                for(uint j=i+1;j<cols(m);j++)
                     if(get(m,i,j)!=get(m,j,i))
                         sym = false;
             return sym;
@@ -185,7 +187,7 @@ bool isSquare(Matrix m)
 {
     if(m!=NULL)
     {
-        if(m->nb_columns==m->nb_rows)
+        if(cols(m)==rows(m))
             return true;
         else
             return false;
@@ -193,28 +195,34 @@ bool isSquare(Matrix m)
     else{err(ERR_NULLMAT);return false;}
 }
 
+/**
+ * Transposée
+ */
 Matrix transpose(Matrix m)
 {
     if(m!=NULL)
     {
-        Matrix m2 = newMEmpty(m->nb_columns,m->nb_rows);
-        for(uint i = 0;i<m->nb_rows;i++)
-            for(uint j=0;j<m->nb_columns;j++)
+        Matrix m2 = newMEmpty(cols(m),rows(m));
+        for(uint i = 0;i<rows(m);i++)
+            for(uint j=0;j<cols(m);j++)
                 set(m2,j,i,get(m,i,j));
         return m2;
     }
     else{err(ERR_NULLMAT);return NULL;}
 }
 
+/**
+ * Addition matricielle
+ */
 Matrix addition(Matrix m1, Matrix m2)
 {
     if(m1!=NULL && m2!=NULL)
     {
-        Matrix res = newMEmpty(m1->nb_columns,m2->nb_rows);
-        if(m1->nb_columns == m2->nb_columns && m1->nb_rows == m2->nb_rows)
+        Matrix res = newMEmpty(cols(m1),rows(m2));
+        if(cols(m1) == cols(m2) && rows(m1) == rows(m2))
         {
-            for(uint i = 0;i<m1->nb_rows;i++)
-                for(uint j=0;j<m1->nb_columns;j++)
+            for(uint i = 0;i<rows(m1);i++)
+                for(uint j=0;j<cols(m1);j++)
                     set(res,i,j,get(m1,i,j)+get(m2,i,j));
             return res;
         }
@@ -227,19 +235,22 @@ Matrix addition(Matrix m1, Matrix m2)
     else{err(ERR_NULLMAT);return NULL;}
 }
 
+/**
+ * Produit matriciel
+ */
 Matrix multiplication(Matrix m1,Matrix m2)
 {
     if(m1!=NULL && m2!=NULL)
     {
-        if(m1->nb_columns == m2->nb_rows)
+        if(cols(m1) == rows(m2))
         {
-            Matrix res = newMEmpty(m1->nb_rows,m2->nb_columns);
-            for(uint i = 0;i<res->nb_rows;i++)
+            Matrix res = newMEmpty(rows(m1),cols(m2));
+            for(uint i = 0;i<rows(res);i++)
             {
-                for(uint j=0;j<res->nb_columns;j++)
+                for(uint j=0;j<cols(res);j++)
                 {
                     float sum = 0;
-                    for(uint k=0;k<m1->nb_columns;k++)
+                    for(uint k=0;k<cols(m1);k++)
                     {
                         sum+=get(m1,i,k)*get(m2,k,j);
                     }
@@ -257,30 +268,36 @@ Matrix multiplication(Matrix m1,Matrix m2)
     else{err(ERR_NULLMAT);return NULL;}
 }
 
+/**
+ * Multiplication par un scalaire
+ */
 Matrix scalar(Matrix m, E scalar)
 {
     if(m!=NULL)
     {
-        Matrix res = newMEmpty(m->nb_rows,m->nb_columns);
-        for(uint i = 0;i<m->nb_rows;i++)
-            for(uint j=0;j<m->nb_columns;j++)
+        Matrix res = newMEmpty(rows(m),cols(m));
+        for(uint i = 0;i<rows(m);i++)
+            for(uint j=0;j<cols(m);j++)
                 set(res,i,j,scalar*get(m,i,j));
         return res;
     }
     else{err(ERR_NULLMAT);return NULL;}
 }
 
+/**
+ * Elle fait quoi celle-ci ?
+ */
 Matrix extract(Matrix m, uint i, uint j)
 {
-    Matrix ext = newMEmpty(m->nb_rows-1, m->nb_columns-1);
+    Matrix ext = newMEmpty(rows(m)-1, cols(m)-1);
     uint ei,ej,fj;
     uint fi = 0;
-    for(ei = 0; ei < m->nb_rows; ei++)
+    for(ei = 0; ei < rows(m); ei++)
     {
         if(ei != i)
         {
             fj = 0;
-            for(ej = 0; ej < m->nb_columns; ej++)
+            for(ej = 0; ej < cols(m); ej++)
             {
                 if(ej != j)
                 {
