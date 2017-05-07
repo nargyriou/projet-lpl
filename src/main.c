@@ -1,32 +1,50 @@
+#define _GNU_SOURCE
+
+#include <stdlib.h>
 #include <stdio.h>
-#include <ncurses.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "algo.h"
 #include "interface.h"
 
+
+
+Matrix readline(){
+    int lu = 0;
+    char* cmd = NULL;
+    unsigned long zero = 0;
+    Matrix m;
+
+    fflush(stdout);
+    lu = getline(&cmd, &zero, stdin);
+
+    if (lu < 0)
+        return NULL;
+
+    cmd[--lu] = '\0';
+
+    if (lu <= 0){
+        return NULL;
+    }
+    else if (strcmp(cmd, "scan") == 0){
+        m = scan_matrix();
+        return m;
+    }
+
+    return NULL;
+}
+
 int main()
 {
-    // tout ce qui vient de ncurses doit sortir sur stderr
-    int saved_stdout = dup(1);
-    
-    // je redirige stdout sur stderr
-    dup2(2, 1);
-    
-    // sorcellerie ncurses
-    initscr();
+    Matrix m3 = NULL;
 
-    Matrix m3 = scan_matrix();
+    m3 = readline();
 
-    endwin();
-    // fin sorcellerie
-
-    // je restore stdout
-    dup2(saved_stdout, 1);
-
-    printMatrix(m3);
-    deleteMatrix(m3);
+    if (m3 != NULL){
+        printMatrix(m3);
+        deleteMatrix(m3);
+    }
 
     return 0;
-
 }

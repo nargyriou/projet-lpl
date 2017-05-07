@@ -45,12 +45,16 @@ void err(int errnum)
 
 uint rows(Matrix m)
 {
-    return m->nb_rows;
+    if(m!=NULL)
+        return m->nb_rows;
+    return 0;
 }
 
 uint cols(Matrix m)
 {
-    return m->nb_columns;
+    if(m!=NULL)
+        return m->nb_columns;
+    return 0;
 }
 
 E get(Matrix m, uint i, uint j)
@@ -82,10 +86,30 @@ void set(Matrix m, uint i, uint j, E val)
 }
 
 E* getRow(Matrix m, uint i){
+    if(m==NULL){
+        err(ERR_NULLMAT);
+        return NULL;
+    }
+    
+    if(i>=rows(m)){
+        err(ERR_WRGID);
+        return NULL;
+    }
+
     return m->mat[i];
 }
 
 void setRow(Matrix m, uint i, E* row){
+    if(m==NULL){
+        err(ERR_NULLMAT);
+        return;
+    }
+    
+    if(i>=rows(m)){
+        err(ERR_WRGID);
+        return;
+    }
+
     m->mat[i] = row;
 }
 
