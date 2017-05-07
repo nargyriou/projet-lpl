@@ -12,6 +12,7 @@ EXEC = main
 INCLUDES = $(wildcard include/*.h)
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:src/%.c=obj/%.o)
+TESTS = $(wildcard tests/*.test)
 
 all: $(EXEC)
 
@@ -30,3 +31,6 @@ clean :
 .PHONY: tests
 tests:
 	tests/runtests.sh $(TESTS)
+.PHONY: exemplary
+exemplary:
+	tests/saveresults.sh $(TESTS)

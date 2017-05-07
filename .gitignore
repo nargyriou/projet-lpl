@@ -1,4 +1,5 @@
 main
+tmp
 *.o
 *.pdf
 *.7z

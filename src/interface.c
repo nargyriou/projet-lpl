@@ -1,6 +1,8 @@
-#include "interface.h"
-
 #include <ncurses.h>
+#include <stdlib.h>
+
+#include "interface.h"
+#include "string_split.h"
 
 void printw_matrix(Matrix m){
     printw("Your matrix:\n");
@@ -29,10 +31,23 @@ void printw_matrix(Matrix m){
     }
 }
 
-E get_next_val(){
-    E val;
-    scanw("%lf", &val);
-    return val;
+char* get_next_val(){
+    static char** words = NULL;
+    static char str[80];
+    static int i = -1;
+    
+    if (i >= 0 && words[i] == NULL){
+        free_split(words);
+        words = NULL;
+    }
+
+    if (words == NULL){
+        getnstr(str, 80);
+        words = string_split(str, " ");
+        i=0;
+    }
+
+    return words[i++];
 }
 
 Matrix scan_matrix(){
@@ -64,10 +79,14 @@ Matrix scan_matrix(){
             move(MaxY-1, 0);
             clrtoeol(); //clear line
             printw("Number: ");
-            set(m, i, j, get_next_val());
+            set(m, i, j, strtod(get_next_val(), NULL));
 
         }
     }
 
     return m;
+}
+
+void parse_commands(){
+
 }

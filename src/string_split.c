@@ -1,10 +1,19 @@
+#include "string_split.h"
+
 #include <stdlib.h>
+
+
+void free_split(char** words){
+	for (int i = 0; words[i] != NULL; ++i)
+		free(words[i]);
+	free(words);
+}
+
 // #include <stdio.h>
 
 /**
  * @brief Découpe une string en fonction d'un substring
  * @details Par exemple,
- * @author Nicolas Argyriou
  * 
  * ```C
  * string_split("A | B | C", " | ");
