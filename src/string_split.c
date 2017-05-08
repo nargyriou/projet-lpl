@@ -4,6 +4,9 @@
 
 
 void free_split(char** words){
+	if (words==NULL)
+		return;
+	
 	for (int i = 0; words[i] != NULL; ++i)
 		free(words[i]);
 	free(words);
@@ -59,7 +62,7 @@ char** string_split(char* str, char* substring){
 	 * Même si C n'est pas suivi d'une virgule.
 	 */
 
-	while (1) {
+	while (str != NULL) {
 		// Si finalement on ne trouve pas notre substring
 		if (str[i] != substring[j] && str[i] != '\0') {
 			// Nous revenons avant ces cases que nous avons cru être le début

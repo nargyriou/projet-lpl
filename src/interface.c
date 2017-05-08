@@ -10,13 +10,6 @@
 #include "interface.h"
 #include "string_split.h"
 
-// Royaume de la sorcellerie
-#define clear()      fprintf(stderr, "\033[H\033[J")
-#define move(x,y)    fprintf(stderr, "\033[%d;%dH", (x), (y))
-// Contrée de la magie noire
-#define printw(x...) fprintf(stderr, x)
-// Fin du royaume
-
 // pour pouvoir rediriger proprement le programme
 #define NCURSES_TO_STDERR
 
@@ -48,12 +41,15 @@ char* scan_line(){
 
     lu = getline(&cmd, &zero, stdin);
 
-    if (lu < 0)
+    if (lu < 0){
+        free(cmd);
         return NULL;
+    }
 
     cmd[--lu] = '\0';
 
     if (lu <= 0){
+        free(cmd);
         return NULL;
     }
 
@@ -75,9 +71,15 @@ char* scan_next_word(){
     // If nothing in the buffer
     if (words == NULL){
         // Fill it
-        str = scan_line();
-        words = string_split(str, " ");
         i=0;
+        str = scan_line();
+        if (str){
+            words = string_split(str, " ");
+            free(str);
+        } 
+        else {
+            return NULL;
+        }
     }
 
     return words[i++];
@@ -100,12 +102,10 @@ Matrix scan_matrix(){
 
     printw("Rows: ");
     word = scan_next_word();
-    printw("%s\n", word);
     rows = atoi(word);
 
-    printw("Columns: ");
+    printw("\nColumns: ");
     word = scan_next_word();
-    printw("%s\n", word);
     columns = atoi(word);
 
     Matrix m = newMEmpty(rows, columns);
@@ -121,9 +121,10 @@ Matrix scan_matrix(){
             move(MaxY-1, 0);
             printw("Number: ");
             set(m, i, j, strtod(scan_next_word(), NULL));
-
         }
     }
+
+    //free(word);
 
     return m;
 }

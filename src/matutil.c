@@ -184,9 +184,9 @@ void printMatrix(Matrix m)
             printf("(");
             // iterates on all but the last column
             for(uint j=0; j < x; j++){
-                printf("%9f ", get(m, i, j));
+                printf("%9lf ", get(m, i, j));
             }
-            printf("%9f)\n", get(m, i, x));
+            printf("%9lf)\n", get(m, i, x));
         }
         printf("\n");
     }

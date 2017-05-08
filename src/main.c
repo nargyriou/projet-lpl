@@ -8,43 +8,42 @@
 #include "algo.h"
 #include "interface.h"
 
+void print_help(){
+    printw("matrix: Create a new matrix");
+}
 
-
-Matrix readline(){
-    int lu = 0;
+int readline(){
     char* cmd = NULL;
-    unsigned long zero = 0;
     Matrix m;
 
-    fflush(stdout);
-    lu = getline(&cmd, &zero, stdin);
+    cmd = scan_next_word();
 
-    if (lu < 0)
-        return NULL;
-
-    cmd[--lu] = '\0';
-
-    if (lu <= 0){
-        return NULL;
+    if (cmd == NULL){
+        printw("Exit ? y/n ");
+        cmd = scan_next_word();
+        if (cmd == NULL || strcasecmp(cmd, "y") == 0){
+            return 0;
+        }
+        else
+            printf("'%p'\n", cmd);
     }
-    else if (strcmp(cmd, "scan") == 0){
+    else if (strcasecmp(cmd, "matrix") == 0){
         m = scan_matrix();
-        return m;
+        if (m){
+            printMatrix(m);
+            deleteMatrix(m);
+        }
+    }
+    else {
+        printw("Unknown command: %s\n", cmd);
     }
 
-    return NULL;
+    return 1;
 }
 
 int main()
 {
-    Matrix m3 = NULL;
-
-    m3 = readline();
-
-    if (m3 != NULL){
-        printMatrix(m3);
-        deleteMatrix(m3);
-    }
+    while (readline() > 0);
 
     return 0;
 }
