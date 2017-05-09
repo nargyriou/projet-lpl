@@ -478,29 +478,10 @@ Matrix calcule_noeud(noeud n){
     return 0;
 }
 
-<<<<<<< HEAD
-int main()
-{
-    Matrix m1 = newM(3,3,9,
-                    1.0, 2.0, 4.0,
-                    3.0, 1.0, 9.0,
-                    4.0, 2.0, 6.0);
-    //Matrix L = id(rows(m1)), U=id(rows(m1));
-    PLU(m1);
-
-    char id='A';
-    Matrix m = scan_matrix();
-    if (m){
-        id = addUserMatrix(m);
-        printf("%c = ", id);
-        printMatrix(m);
-    }
-=======
 /**
  * User input handling
  * 
  */
->>>>>>> 6d356e3f38632c81195493c648d9ad795ada5fb9
 
 void print_help(){
     printf("matrix <r> <c> <a1, ..., aN> : Create a new matrix\n");
