@@ -4,6 +4,10 @@
 
 E detRec(Matrix m)
 {
+    if(cols(m) == 1 && rows(m)==1)
+    {
+        return get(m,0,0);
+    }
     if(cols(m) == 2 && rows(m)==2)
     {
         return get(m,0,0)*get(m,1,1)-get(m,0,1)*get(m,1,0);
@@ -25,30 +29,83 @@ E detRec(Matrix m)
 
 Matrix invertComat(Matrix m)
 {
-    int d = detRec(m);
+    E d = detRec(m);
     if(d != 0)
     {
-        short signe = 1;
-        Matrix comat = newMEmpty(rows(m),cols(m));
-        for(uint i=0; i<rows(m); i++)
-            for(uint j=0; j<cols(m); j++)
-            {
-                Matrix ext = extract(m,i,j);
-                set(comat,i,j,signe*detRec(ext));
-                signe *= -1;
-                deleteMatrix(ext);
+        if(cols(m) == 2 && rows(m)==2)
+        {
+            Matrix inv = newM(2,2,4,
+                                get(m,1,1),-get(m,0,1),
+                                -get(m,1,0),get(m,0,0));
+            return scalar(inv,1/d);
+        }
+        else
+        {
+            short signe = 1;
+            Matrix comat = newMEmpty(rows(m),cols(m));
+            for(uint i=0; i<rows(m); i++){
+                for(uint j=0; j<cols(m); j++)
+                {
+                    Matrix ext = extract(m,i,j);
+                    printMatrix(ext);
+                    set(comat,i,j,signe*detRec(ext));
+                    signe *= -1;
+                    deleteMatrix(ext);
+                }
             }
-        Matrix trans = transpose(comat);
-        deleteMatrix(comat);
-        Matrix invert = scalar(trans, 1/d);
-        deleteMatrix(trans);
-        return invert;
+            Matrix trans = transpose(comat);
+            deleteMatrix(comat);
+            Matrix invert = scalar(trans, 1/d);
+            deleteMatrix(trans);
+            return invert;
+        }
     }
     else
     {
         printf("err");
         return NULL;
     }
+}
+
+Matrix invertGauss(Matrix m)
+{
+    int c = 0;
+    E coeff_diag = 0, coeff = 0;
+    Matrix tmp1 = multiplication(m,id(rows(m)));
+    Matrix tmp2 = id(rows(m));
+
+    for (uint h = 0; h < rows(m); h++) {
+        coeff_diag = get(tmp1, h, h);
+        c = 0;
+
+        while (abs (coeff_diag) < 0.000000001) {
+            c++;
+            
+            for (uint i = 0; i < rows(m); i++) {
+                set(tmp1, h, i, get(tmp1, h, i) + get(tmp1, h + c, i));
+                set(tmp2, h, i, get(tmp2, h, i) + get(tmp2, h + c, i));
+            }
+            coeff_diag = get(tmp1, h, h);
+        }
+        
+        for (uint j = 0; j < rows(m); j++) {
+            set(tmp1, h, j, get(tmp1, h, j) / coeff_diag);
+            set(tmp2, h, j, get(tmp2, h, j) / coeff_diag);
+        }
+        
+        for (uint k = 0; k < rows(m); k++) {
+            coeff = get(tmp1, k, h);
+            
+            if (k != h) {
+                for (uint l = 0; l < rows(m); l++) {
+                    set(tmp1, k, l,get (tmp1, k, l) - coeff * get(tmp1, h, l));
+                    set(tmp2, k, l,get(tmp2, k, l) - coeff * get(tmp2, h, l));
+                }
+            }
+        }
+    }
+
+    return tmp2;
 }
 
 void triU(Matrix m)

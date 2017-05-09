@@ -43,6 +43,12 @@ int readline(){
 
 int main()
 {
+    Matrix m = newM(2, 2, 4,
+                        2.0, 2.0,
+                        3.0, 1.0);
+    m = invertGauss(m);
+    printMatrix(m);
+    //printMatrix(invertGauss(m));
     while (readline() > 0);
 
     return 0;
