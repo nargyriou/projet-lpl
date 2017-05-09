@@ -581,6 +581,7 @@ int main()
     move(0,0);
     printw("   Matrix Polish Calculator\n");
     printw("Nathan ROTH & Nicolas ARGYRIOU\n");
+    printw("\nType 'help' for cammand list\n\n");
     printw("\n");
     while (1){
         printw(">");
