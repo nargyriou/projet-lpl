@@ -9,6 +9,7 @@ Matrix invertComat(Matrix m);
 Matrix invertGauss(Matrix m);
 void triU(Matrix m);
 void triL(Matrix m);
+void triLU(Matrix m, Matrix L, Matrix U);
 Matrix PLU();
 
 

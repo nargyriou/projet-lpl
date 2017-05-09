@@ -125,6 +125,47 @@ void triU(Matrix m)
     }
 }
 
+void triL(Matrix m)
+{
+    for (uint i = 0; i < cols(m); i++)
+    {
+        //E coeffDiagonal = get(m, i, i);
+
+        for (uint j = 0; j < i+1; j++)
+        {
+            //E q = get(m, i, j);
+            //set(m, i, j, 0.0);
+            if(i==j){
+                set(m,i,j,1);                                                                                                                                                                       
+            }
+            for (uint k = 0; k < i+1; k++)
+                set(m, i, j, get(m, i, k) - (get(m, k, j)*get(m,k,j)));
+        }
+    }
+}
+
+void triLU(Matrix m, Matrix L, Matrix U)
+{
+    uint n = rows(m);
+    L = id(rows(m));
+    U = newMEmpty(rows(m),rows(m));
+    for(uint i = 0; i < n-1 ; i++){
+        for(uint j = i+1; j<n ; j++){
+            set(L, j, i, get(m,j,i)/get(m,i,i));
+        }
+        for(uint j = i; j<n ; j++){
+            set(U, j, i, get(m,i,j));
+        }
+        for(uint j = i+1; j<n ; j++){
+            for(uint k = i+1; k<n ; k++){
+                set(m, j, k, get(m, j, k)-get(L,j,i)*get(U,i,k));
+            }
+        }
+    }
+    set(U,n-1,n-1,get(m,n-1,n-1));
+    printMatrix(L);printMatrix(U);
+}
+
 // Fonctions relatives au pivot de gauss
 
 void scalar_row(Matrix m, uint row, E scal)
