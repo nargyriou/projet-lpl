@@ -83,7 +83,7 @@ typedef enum operation {
     ADD, MULT, SCALE,
 
     // Opérations unaires
-    INV, GAUSS, TRANSPOSE, EXTRACT, TRIANGULE,
+    INV, GAUSS, TRANSPOSE, EXTRACT, TRIANGULE, PLU
 
     // Opérations d'erreur
     INCONNU, MANQUANT
@@ -150,6 +150,8 @@ type_noeud optotype(operation op){
             return UNAIRE;
         case TRIANGULE: 
             return UNAIRE;
+        case PLU: 
+            return UNAIRE;
 
         // Opérations d'erreur
         case INCONNU: 
@@ -183,6 +185,8 @@ char* optostr(operation op){
             return "EXTRACT";
         case TRIANGULE: 
             return "TRIANGULE";
+        case PLU: 
+            return "PLU";
 
         // Opérations d'erreur
         case MANQUANT:
@@ -219,10 +223,10 @@ operation strtoop(char* mot){
         return GAUSS;
     else if (strcasecmp(mot, "transpose") == 0)
         return TRANSPOSE;
-    else if (strcasecmp(mot, "extract") == 0)
-        return EXTRACT;
     else if (strcasecmp(mot, "triangule") == 0)
         return TRIANGULE;
+    else if (strcasecmp(mot, "plu") == 0)
+        return PLU;
 
     return INCONNU;
 }
@@ -455,6 +459,8 @@ Matrix calcule_noeud(noeud n){
             return transpose(gauche);
         case TRIANGULE: 
             return triU(gauche);
+        case PLU: 
+            return PLU(gauche);
         default:
             break;
     }
@@ -482,8 +488,17 @@ Matrix calcule_noeud(noeud n){
  */
 
 void print_help(){
-    printf("matrix <r> <c> <a1, ..., aN> : Create a new matrix\n");
-    printf("\n");
+    printf("matrix <r> <c> <a1, ..., aN> : Create a new r*c matrix with\n");
+    printf("                                the coefficients a1, ..., aN\n");
+    printf(" + A B                        : Add the matrixes A and B\n");
+    printf(" * A B                        : Multiply A with B\n");
+    printf(" . A n                        : Multiply A with integer 2\n");
+    printf(" inv A                        : Invert A\n");
+    printf(" gauss A                      : Invert A with gauss method\n");
+    printf(" transpose A                  : Transpose A\n");
+    printf(" triangule A                  : Upper triangulation of A\n");
+    printf(" plu A                        : Upper/Lower decompisition\n");
+    printf(" \n");
 }
 
 int readCmd(){
