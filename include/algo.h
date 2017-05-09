@@ -8,7 +8,6 @@ E detTri(Matrix m);
 Matrix invertComat(Matrix m);
 Matrix invertGauss(Matrix m);
 Matrix triU(Matrix m);
-void triL(Matrix m);
 void PLU(Matrix m);
 
 
