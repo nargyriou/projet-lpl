@@ -535,6 +535,12 @@ Matrix calcule_noeud(noeud n){
 
 int main()
 {
+    Matrix m1 = newM(3,3,9,
+                    1.0, 2.0, 4.0,
+                    3.0, 1.0, 9.0,
+                    4.0, 2.0, 6.0);
+    Matrix L = id(rows(m1)), U=id(rows(m1));
+    triLU(m1,L,U);
 
     char id='A';
     Matrix m = scan_matrix();
