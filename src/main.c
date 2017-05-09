@@ -83,7 +83,7 @@ typedef enum operation {
     ADD, MULT, SCALE,
 
     // Opérations unaires
-    INV, GAUSS, TRANSPOSE, EXTRACT, TRIANGULE, PLU
+    INV, GAUSS, TRANSPOSE, EXTRACT, TRIANGULE, PLU,
 
     // Opérations d'erreur
     INCONNU, MANQUANT
@@ -460,7 +460,7 @@ Matrix calcule_noeud(noeud n){
         case TRIANGULE: 
             return triU(gauche);
         case PLU: 
-            return PLU(gauche);
+            return plu(gauche);
         default:
             break;
     }
