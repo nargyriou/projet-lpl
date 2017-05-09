@@ -270,7 +270,7 @@ Matrix addition(Matrix m1, Matrix m2)
 /**
  * Produit matriciel
  */
-Matrix multiplication(Matrix m1,Matrix m2)
+Matrix multiplication(Matrix m1, Matrix m2)
 {
     if(m1!=NULL && m2!=NULL)
     {

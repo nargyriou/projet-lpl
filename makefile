@@ -7,7 +7,7 @@ else
 	CFLAGS = -Wall -Werror -Wextra -std=c11
 endif
 
-LDFLAGS = -lm -lcurses
+LDFLAGS = -lm
 EXEC = main
 INCLUDES = $(wildcard include/*.h)
 SRC = $(wildcard src/*.c)
