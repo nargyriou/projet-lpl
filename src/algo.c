@@ -144,26 +144,55 @@ void triL(Matrix m)
     }
 }
 
-void triLU(Matrix m, Matrix L, Matrix U)
+void PLU(Matrix m)
 {
-    uint n = rows(m);
-    L = id(rows(m));
-    U = newMEmpty(rows(m),rows(m));
-    for(uint i = 0; i < n-1 ; i++){
-        for(uint j = i+1; j<n ; j++){
-            set(L, j, i, get(m,j,i)/get(m,i,i));
+    E p = 0, q = 0, tamp = 0;
+    uint l;
+    Matrix P = id(rows(m));
+    Matrix L = id(rows(m)); 
+    
+    for (uint k = 0; k < rows(m); k++)
+    {
+        p = get(m,k,k); l = k;
+        for(uint i = k; i < rows(m); i++)
+        {
+            if(abs(get(m,i,k)) > p)
+            {
+                p = get(m,i,k); l = i;
+            }
         }
-        for(uint j = i; j<n ; j++){
-            set(U, j, i, get(m,i,j));
+        if(l != k)
+        {
+            for(uint j = 0; j < rows(m); j++)
+            {
+                tamp = get(m,k,j); 
+                set(m,k,j,get(m,l,j));
+                set(m,l,j,tamp);
+                if(j < k)
+                {
+                    tamp = get(L,k,j); 
+                    set(L,k,j, get(L,l,j));
+                    set(L,l,j, tamp);
+                }
+                tamp = get(P,k,j); 
+                set(P,k,j,get(P,l,j));
+                set(P,l,j, tamp);
+            }
         }
-        for(uint j = i+1; j<n ; j++){
-            for(uint k = i+1; k<n ; k++){
-                set(m, j, k, get(m, j, k)-get(L,j,i)*get(U,i,k));
+        for(uint i = k+1; i < rows(m); i++)
+        {
+            q = get(m,i,k); 
+            set(m,i,k, 0);
+            set(L,i,k,q/p);
+            for(uint j = k+1; j < rows(m); j++)
+            {
+                set(m,i,j, get(m,i,j) - (get(m,k,j)*(q/p)));
             }
         }
     }
-    set(U,n-1,n-1,get(m,n-1,n-1));
-    printMatrix(L);printMatrix(U);
+    printMatrix(P);
+    printMatrix(L);
+    printMatrix(m);
 }
 
 // Fonctions relatives au pivot de gauss
