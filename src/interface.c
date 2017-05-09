@@ -34,79 +34,51 @@ void printw_matrix(Matrix m){
     }
 }
 
-char* scan_line(){
-    int lu = 0;
-    char* cmd = NULL;
-    unsigned long zero = 0;
-
-    lu = getline(&cmd, &zero, stdin);
-
-    if (lu < 0){
-        free(cmd);
-        return NULL;
-    }
-
-    cmd[--lu] = '\0';
-
-    if (lu <= 0){
-        free(cmd);
-        return NULL;
-    }
-
-    return cmd;
-}
-
 char* scan_next_word(){
-    static char** words = NULL;
-    static int i = -1;
-    char* str;
-    
-    // If end of the buffer
-    if (words && words[i] == NULL){
-        // Empty it
-        free_split(words);
-        words = NULL;
-    }
+    static char* buff = NULL;
+    static int size = 256;
+    int i = 0;
+    char c;
 
-    // If nothing in the buffer
-    if (words == NULL){
-        // Fill it
-        i=0;
-        str = scan_line();
-        if (str){
-            words = string_split(str, " ");
-            free(str);
-        } 
-        else {
-            return NULL;
+    if (buff == NULL)
+        buff = malloc(size);
+
+    c = getchar();
+    while (c == ' ' || c == '\n')
+        c = getchar();
+
+    if (c == EOF){
+        // printf("NULL\n");
+        buff[0] = '\0';
+        return buff;
+    }
+    
+
+    while (c != EOF && c != '\n' && c != ' '){
+        buff[i++] = c;
+        c = getchar();
+
+        if (i >= size){
+            size += 256;
+            buff = realloc(buff, size);
         }
     }
+    buff[i] = '\0';
 
-    return words[i++];
+    // printf("%s\n", buff);
+    return buff;
 }
 
-Matrix scan_matrix(){
-    char* word;
-    uint rows;
-    uint columns;
-    uint MaxY, MaxX;
+Matrix scan_matrix(uint columns, uint rows){
+    // char* word;
+
+    uint MaxY; 
+    // uint MaxX;
     struct winsize w;
     
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     MaxY = w.ws_row;
-    MaxX = w.ws_col;
-
-    printw("%d, %d\n", MaxX, MaxY);
-
-    printw("Please, enter your matrix dimensions:\n");
-
-    printw("Rows: ");
-    word = scan_next_word();
-    rows = atoi(word);
-
-    printw("\nColumns: ");
-    word = scan_next_word();
-    columns = atoi(word);
+    // MaxX = w.ws_col;
 
     Matrix m = newMEmpty(rows, columns);
 
@@ -121,6 +93,7 @@ Matrix scan_matrix(){
             move(MaxY-1, 0);
             printw("Number: ");
             set(m, i, j, strtod(scan_next_word(), NULL));
+            printw("\n");
         }
     }
 
@@ -128,3 +101,4 @@ Matrix scan_matrix(){
 
     return m;
 }
+
