@@ -27,6 +27,16 @@ E detRec(Matrix m)
     }
 }
 
+E detTri(Matrix m)
+{
+    Matrix tri = triU(m);
+    E det = 1;
+    for(uint i = 0; i<rows(m);i++){
+        det *= get(m,i,i);
+    }
+    return det;
+}
+
 Matrix invertComat(Matrix m)
 {
     E d = detRec(m);
