@@ -453,10 +453,8 @@ Matrix calcule_noeud(noeud n){
             return invertGauss(gauche);
         case TRANSPOSE: 
             return transpose(gauche);
-        case EXTRACT: 
-            return newM(1, 1, 1, 0);
         case TRIANGULE: 
-            return newM(1, 1, 1, 0);
+            return triU(gauche);
         default:
             break;
     }
@@ -466,11 +464,11 @@ Matrix calcule_noeud(noeud n){
     (void)droit;
     switch (op){
         case ADD: 
-            return newM(1, 1, 1, 0);
+            return addition(gauche, droit);
         case MULT: 
-            return newM(1, 1, 1, 0);
-        case SCALE: 
-            return newM(1, 1, 1, 0);
+            return multiplication(gauche, droit);
+        //case SCALE: 
+            //return scalar(gauche, droit);
         default: 
             break;
     }

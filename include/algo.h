@@ -7,7 +7,7 @@ E detRec(Matrix m);
 E detTri(Matrix m);
 Matrix invertComat(Matrix m);
 Matrix invertGauss(Matrix m);
-void triU(Matrix m);
+Matrix triU(Matrix m);
 void triL(Matrix m);
 void PLU(Matrix m);
 

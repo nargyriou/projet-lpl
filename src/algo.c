@@ -108,7 +108,7 @@ Matrix invertGauss(Matrix m)
     return tmp2;
 }
 
-void triU(Matrix m)
+Matrix triU(Matrix m)
 {
     for (uint i = 0; i < cols(m); i++)
     {
@@ -123,6 +123,7 @@ void triU(Matrix m)
                 set(m, j, k, get(m, j, k) - (get(m, i, k)*(q/coeffDiagonal)) );
         }
     }
+    return m;
 }
 
 void triL(Matrix m)
