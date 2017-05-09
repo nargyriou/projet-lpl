@@ -482,8 +482,16 @@ Matrix calcule_noeud(noeud n){
  */
 
 void print_help(){
-    printf("matrix <r> <c> <a1, ..., aN> : Create a new matrix\n");
-    printf("\n");
+    printf("matrix <r> <c> <a1, ..., aN> : Create a new r*c matrix with\n");
+    printf("                                the coefficients a1, ..., aN\n");
+    printf(" + A B                        : Add the matrixes A and B\n");
+    printf(" * A B                        : Multiply A with B\n");
+    printf(" . A n                        : Multiply A with integer 2\n");
+    printf(" inv A                        : Invert A\n");
+    printf(" gauss A                      : Invert A with gauss method\n");
+    printf(" transpose A                  : Transpose A\n");
+    printf(" triangule A                  : Upper triangulation of A\n");
+    printf(" \n");
 }
 
 int readCmd(){
