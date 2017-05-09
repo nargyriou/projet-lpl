@@ -32,7 +32,7 @@ E detTri(Matrix m)
     Matrix tri = triU(m);
     E det = 1;
     for(uint i = 0; i<rows(m);i++){
-        det *= get(m,i,i);
+        det *= get(tri,i,i);
     }
     return det;
 }
@@ -136,26 +136,7 @@ Matrix triU(Matrix m)
     return m;
 }
 
-void triL(Matrix m)
-{
-    for (uint i = 0; i < cols(m); i++)
-    {
-        //E coeffDiagonal = get(m, i, i);
-
-        for (uint j = 0; j < i+1; j++)
-        {
-            //E q = get(m, i, j);
-            //set(m, i, j, 0.0);
-            if(i==j){
-                set(m,i,j,1);                                                                                                                                                                       
-            }
-            for (uint k = 0; k < i+1; k++)
-                set(m, i, j, get(m, i, k) - (get(m, k, j)*get(m,k,j)));
-        }
-    }
-}
-
-void PLU(Matrix m)
+Matrix PLU(Matrix m)
 {
     E p = 0, q = 0, tamp = 0;
     uint l;
@@ -204,6 +185,7 @@ void PLU(Matrix m)
     printMatrix(P);
     printMatrix(L);
     printMatrix(m);
+    return m;
 }
 
 // Fonctions relatives au pivot de gauss

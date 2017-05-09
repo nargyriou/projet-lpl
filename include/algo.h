@@ -8,7 +8,7 @@ E detTri(Matrix m);
 Matrix invertComat(Matrix m);
 Matrix invertGauss(Matrix m);
 Matrix triU(Matrix m);
-void PLU(Matrix m);
+Matrix PLU(Matrix m);
 
 
 // Fonctions relatives au pivot de Gauss
