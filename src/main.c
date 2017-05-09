@@ -193,8 +193,6 @@ char* optostr(operation op){
 }
 
 operation strtoop(char* mot){
-    printw("aaa %s\n", mot);
-
     if (mot[0] >= '0' && mot[0] <= '9')
         return AUCUNE;
     if (mot[0] == '-' || mot[0] == '+')
@@ -370,14 +368,14 @@ void print_noeud(noeud n){
     printw("'\n\n");
 }
 
-noeud parse_mots(char** mots){
+noeud parse_mots_rec(char** mots){
     if (mots[0] == NULL){
         raler("Error: MISSING operand", 4);
         return new_erreur(MANQUANT);
     }
 
     if (mots[0][0] == '#')
-        return parse_mots(&mots[1]);
+        return parse_mots_rec(&mots[1]);
 
     operation op = strtoop(mots[0]);
     type_noeud t = optotype(op);
@@ -387,12 +385,12 @@ noeud parse_mots(char** mots){
     n.c = NULL;
     switch (t){
         case BINAIRE:
-            n = new_binaire(op, parse_mots(&mots[1]),
-                                parse_mots(&mots[2]));
+            n = new_binaire(op, parse_mots_rec(&mots[1]),
+                                parse_mots_rec(&mots[2]));
             break;
 
         case UNAIRE:
-            n = new_unaire(op, parse_mots(&mots[1]));
+            n = new_unaire(op, parse_mots_rec(&mots[1]));
             break;
 
         case CONSTANTE:
@@ -420,11 +418,8 @@ noeud parse_mots(char** mots){
     return n;
 }
 
-noeud parse_ligne(char* str){
-    char** mots = string_split(str, " ");
-
-    noeud n = parse_mots(mots);
-    //binaire* b = (binaire*)n;
+noeud parse_mots(char** mots){
+    noeud n = parse_mots_rec(mots);
 
     for (int i = 0; mots[i]; ++i){
         if (mots[i][0] != '#')
@@ -434,56 +429,6 @@ noeud parse_ligne(char* str){
     free(mots);
     
     return n;
-}
-
-/**
- * User input handling
- * 
- */
-
-void print_help(){
-    printf("matrix <r> <c> <a1, ..., aN> : Create a new matrix\n");
-    printf("\n");
-}
-
-int readCmd(){
-    static int quit = 0;
-    char* cmd = NULL;
-    Matrix m;
-
-    cmd = scan_next_word();
-
-    if (quit){
-        if (cmd == NULL)
-            return 0;
-        if (strcasecmp(cmd, "y") == 0)
-            return 0;
-        
-        quit = 0;
-    }
-    
-    if (cmd == NULL){
-        quit++;
-        printw("Exit ? y/n ");
-    }
-
-    else if (strcasecmp(cmd, "matrix") == 0){
-        m = scan_matrix();
-        if (m){
-            char id = addUserMatrix(m);
-            printf("%c = ", id);
-            printMatrix(m);
-        }
-    }
-    else if (strcasecmp(cmd, "help") == 0){
-        print_help();
-    }
-    else {
-        printf("Unknown command: %s\n", cmd);
-        printw("You can always use 'help' !\n");
-    }
-
-    return 1;
 }
 
 Matrix calcule_noeud(noeud n){
@@ -533,26 +478,95 @@ Matrix calcule_noeud(noeud n){
     return 0;
 }
 
-int main()
-{
+/**
+ * User input handling
+ * 
+ */
 
-    char id='A';
-    Matrix m = scan_matrix();
-    if (m){
-        id = addUserMatrix(m);
-        printf("%c = ", id);
-        printMatrix(m);
+void print_help(){
+    printf("matrix <r> <c> <a1, ..., aN> : Create a new matrix\n");
+    printf("\n");
+}
+
+int readCmd(){
+    unsigned long zero = 0;
+    char* ligne = NULL;
+    char** mots;
+    int lu = 0;
+
+    lu = getline(&ligne, &zero, stdin);
+
+    if (lu < 0) // ctrl+d
+        exit(0);
+    
+    ligne[--lu] = '\0';
+
+    if (lu <= 0) // vide
+        return 1;
+
+    if (ligne[0] == '#') // commentaire
+        return 1;
+
+    // printf("'%s'\n", ligne);
+    mots = string_split(ligne, " ");
+
+    if (strcasecmp(mots[0], "matrix") == 0){
+        char* word;
+        uint rows, columns;
+
+        word = mots[1];
+        if (word == NULL){
+            printw("How many rows ? ");
+            word = scan_next_word();
+            printw("\n");
+        }
+        rows = atoi(word);
+        
+        word = mots[2];
+        if (mots[1] == NULL || word == NULL){
+            printw("How many columns ? ");
+            word = scan_next_word();
+            printw("\n");
+        }
+        columns = atoi(word);
+
+        Matrix m;
+        m = scan_matrix(rows, columns);
+        if (m){
+            char id = addUserMatrix(m);
+            printf("%c = \n", id);
+            printMatrix(m);
+        }
+    }
+    else if (strcasecmp(mots[0], "help") == 0){
+        print_help();
+    } 
+    else {
+        noeud n = parse_mots(mots);
+        //printf("%s\n", ligne);
+        if (PARSE_ERROR){
+            raler(NULL, 0);
+            print_noeud(n);
+        }
+        else {
+            Matrix resultat;
+            resultat = calcule_noeud(n);
+            printMatrix(resultat);
+            print_noeud(n);
+        }
+        free_noeud(n);
     }
 
-    noeud n = parse_ligne("inv A");
-    print_noeud(n);
+    free(ligne);
 
-    exit(0);
+    return 1;
+}
 
-
+int main()
+{
     clear();
     move(0,0);
-    printw("     Matrix Polish Calculator\n");
+    printw("   Matrix Polish Calculator\n");
     printw("Nathan ROTH & Nicolas ARGYRIOU\n");
     printw("\n");
     while (1){
